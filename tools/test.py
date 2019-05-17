@@ -157,7 +157,7 @@ def siamese_init(im, target_pos, target_sz, model, hp=None):
     z_crop = get_subwindow_tracking(im, target_pos, p.exemplar_size, s_z, avg_chans)
 
     z = Variable(z_crop.unsqueeze(0))
-    net.template(z.cuda())
+    net.template(z)
 
     if p.windowing == 'cosine':
         window = np.outer(np.hanning(p.score_size), np.hanning(p.score_size))
@@ -195,9 +195,9 @@ def siamese_track(state, im, mask_enable=False, refine_enable=False):
     x_crop = Variable(get_subwindow_tracking(im, target_pos, p.instance_size, round(s_x), avg_chans).unsqueeze(0))
 
     if mask_enable:
-        score, delta, mask = net.track_mask(x_crop.cuda())
+        score, delta, mask = net.track_mask(x_crop)
     else:
-        score, delta = net.track(x_crop.cuda())
+        score, delta = net.track(x_crop)
 
     delta = delta.permute(1, 2, 3, 0).contiguous().view(4, -1).data.cpu().numpy()
     score = F.softmax(score.permute(1, 2, 3, 0).contiguous().view(2, -1).permute(1, 0), dim=1).data[:,
@@ -251,7 +251,7 @@ def siamese_track(state, im, mask_enable=False, refine_enable=False):
         delta_x, delta_y = best_pscore_id_mask[2], best_pscore_id_mask[1]
 
         if refine_enable:
-            mask = net.track_refine((delta_y, delta_x)).cuda().sigmoid().squeeze().view(
+            mask = net.track_refine((delta_y, delta_x)).sigmoid().squeeze().view(
                 p.out_size, p.out_size).cpu().data.numpy()
         else:
             mask = mask[0, :, delta_y, delta_x].sigmoid(). \
@@ -561,7 +561,7 @@ def main():
         assert isfile(args.resume), '{} is not a valid file'.format(args.resume)
         model = load_pretrain(model, args.resume)
     model.eval()
-    model = model.cuda()
+    model = model
 
     # setup dataset
     dataset = load_dataset(args.dataset)

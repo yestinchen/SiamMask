@@ -12,7 +12,7 @@ parser.add_argument('--resume', default='', type=str, required=True,
                     metavar='PATH',help='path to latest checkpoint (default: none)')
 parser.add_argument('--config', dest='config', default='config_davis.json',
                     help='hyper-parameter of SiamMask in json format')
-parser.add_argument('--base_path', default='../../data/tennis', help='datasets')
+parser.add_argument('--base_path', default='../../data/mouse1', help='datasets')
 args = parser.parse_args()
 
 if __name__ == '__main__':
